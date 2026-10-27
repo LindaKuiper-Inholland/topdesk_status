@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOPdesk Statusovergangen</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Arial, 'Avenir Next LT Pro', sans-serif;
+    font-size: 12px;
+    color: #000;
+    background: #fff;
+    padding: 12px;
+  }
+  h1 { font-size: 14px; font-weight: 700; color: #E3027F; margin-bottom: 6px; }
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px;
+    margin-bottom: 6px; padding: 5px 10px; background: #f5f5f5;
+    border-radius: 4px; align-items: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .sep { border-left: 1px solid #ddd; height: 12px; }
+  .diagram-wrap { position: relative; width: 660px; height: 500px; }
+  .diagram-wrap svg { position: absolute; top: 0; left: 0; }
+  .tz { position: absolute; cursor: default; }
+  .tz .tip {
+    display: none; position: absolute; background: #222; color: #fff;
+    padding: 8px 11px; border-radius: 4px; font-size: 11px; font-weight: 400;
+    line-height: 1.45; width: 250px; white-space: normal; text-align: left;
+    z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.3); pointer-events: none;
+  }
+  .tz:hover .tip { display: block; }
+  .tip b { font-weight: 700; }
+  .tip .me { color: #5bdb7e; }
+  .tip .ma { color: #ff8a8a; }
+</style>
+</head>
+<body>
+
+<h1>TOPdesk statusovergangen</h1>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#FFFF00;border:1px solid #ccc;"></div> Start</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E3027F;"></div> Actief</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#222;"></div> Wachtend</div>
+  <div class="legend-item"><div class="legend-dot" style="border:2px solid #E3027F;background:#fff;"></div> Reactie</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#555;"></div> Eind</div>
+  <div class="sep"></div>
+  <div class="legend-item"><span style="color:#2ecc71;font-size:12px;">✉</span> mail: jij ziet &amp; bewerkt het sjabloon</div>
+  <div class="legend-item"><span style="color:#e74c3c;font-size:12px;">⚡✉</span> mail: gaat automatisch</div>
+  <div class="sep"></div>
+  <div class="legend-item"><svg width="22" height="6"><line x1="0" y1="3" x2="22" y2="3" stroke="#aaa" stroke-width="1.5" stroke-dasharray="3,2"/></svg> automatische overgang</div>
+</div>
+
+<div class="diagram-wrap">
+<svg width="660" height="500" xmlns="http://www.w3.org/2000/svg" font-family="Arial">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#888"/></marker>
+    <marker id="ab" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6Z" fill="#888"/></marker>
+    <marker id="ad" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#aaa"/></marker>
+  </defs>
+
+  <!-- =========== ROW 0: Start =========== -->
+  <rect x="230" y="10" width="80" height="28" rx="4" fill="#FFFF00" stroke="#ccc000" stroke-width="1.5"/>
+  <text x="270" y="28" text-anchor="middle" font-size="11" font-weight="700">Nieuw</text>
+  <text x="325" y="28" text-anchor="middle" font-size="11" fill="#999">/</text>
+  <rect x="340" y="10" width="104" height="28" rx="4" fill="#FFFF00" stroke="#ccc000" stroke-width="1.5"/>
+  <text x="392" y="28" text-anchor="middle" font-size="11" font-weight="700">Geregistreerd</text>
+
+  <line x1="350" y1="38" x2="350" y2="64" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- =========== ROW 1: In behandeling + Wacht op leverancier =========== -->
+  <rect x="285" y="66" width="130" height="30" rx="4" fill="#E3027F" stroke="#b5026e" stroke-width="1.5"/>
+  <text x="350" y="85" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">In behandeling</text>
+
+  <!-- bidirectional: In behandeling <-> Wacht op leverancier -->
+  <line x1="283" y1="81" x2="182" y2="81" stroke="#888" stroke-width="1.5" marker-start="url(#ab)" marker-end="url(#a)"/>
+  <rect x="40" y="66" width="140" height="30" rx="4" fill="#222" stroke="#111" stroke-width="1.5"/>
+  <text x="110" y="85" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Wacht op leverancier</text>
+  <text x="110" y="113" text-anchor="middle" font-size="12" fill="#2ecc71">✉</text>
+
+  <!-- =========== BUS: from In behandeling down to y=125, spanning Afspraak..Wacht op aanmelder =========== -->
+  <line x1="350" y1="96" x2="350" y2="125" stroke="#888" stroke-width="1.5"/>
+  <line x1="205" y1="125" x2="472" y2="125" stroke="#888" stroke-width="1.5"/>
+  <circle cx="350" cy="125" r="3" fill="#888"/>
+
+  <!-- =========== ROW 2: Afspraak met melder (bidirectional) + Wacht op aanmelder =========== -->
+  <line x1="205" y1="127" x2="205" y2="148" stroke="#888" stroke-width="1.5" marker-start="url(#ab)" marker-end="url(#a)"/>
+  <rect x="135" y="150" width="140" height="28" rx="4" fill="#E3027F" stroke="#b5026e" stroke-width="1.5"/>
+  <text x="205" y="168" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Afspraak met melder</text>
+
+  <line x1="472" y1="125" x2="472" y2="148" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="400" y="150" width="145" height="28" rx="4" fill="#222" stroke="#111" stroke-width="1.5"/>
+  <text x="472" y="168" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Wacht op aanmelder</text>
+  <!-- mail icons right of node -->
+  <text x="555" y="166" font-size="12" fill="#2ecc71">✉</text>
+  <text x="571" y="166" font-size="9" fill="#888">+</text>
+  <text x="580" y="166" font-size="12" fill="#e74c3c">⚡✉</text>
+  <text x="608" y="166" font-size="9" fill="#888">×2</text>
+
+  <!-- Wacht op aanmelder -> Reactie ontvangen -->
+  <line x1="472" y1="178" x2="472" y2="226" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- =========== ROW 3: Reactie ontvangen =========== -->
+  <rect x="407" y="228" width="130" height="28" rx="4" fill="#fff" stroke="#E3027F" stroke-width="2"/>
+  <text x="472" y="246" text-anchor="middle" font-size="10" font-weight="700" fill="#E3027F">Reactie ontvangen</text>
+
+  <!-- return: Reactie -> In behandeling (right side, dashed) -->
+  <path d="M537,242 L600,242 L600,81 L417,81" stroke="#aaa" stroke-width="1.3" fill="none" stroke-dasharray="4,3" marker-end="url(#ad)"/>
+  <text x="608" y="165" font-size="8" fill="#999" transform="rotate(90,608,165)" text-anchor="middle">terug naar behandeling</text>
+
+  <!-- =========== main path: bus -> Opgelost =========== -->
+  <line x1="350" y1="125" x2="350" y2="306" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- branch to Niet opgelost -->
+  <line x1="350" y1="290" x2="215" y2="290" stroke="#888" stroke-width="1.5"/>
+  <line x1="215" y1="290" x2="215" y2="306" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- dashed: Wacht op aanmelder (15d) -> Opgelost, routed left of Reactie -->
+  <path d="M410,178 L385,178 L385,306" stroke="#aaa" stroke-width="1.3" fill="none" stroke-dasharray="4,3" marker-end="url(#ad)"/>
+  <text x="378" y="222" font-size="8" fill="#999" text-anchor="end">15 dagen</text>
+  <text x="378" y="231" font-size="8" fill="#999" text-anchor="end">geen reactie</text>
+
+  <!-- dashed: Opgelost -> Reactie ontvangen (aanmelder reageert) -->
+  <path d="M400,322 L472,322 L472,258" stroke="#aaa" stroke-width="1.3" fill="none" stroke-dasharray="4,3" marker-end="url(#ad)"/>
+  <text x="478" y="295" font-size="8" fill="#999">aanmelder</text>
+  <text x="478" y="304" font-size="8" fill="#999">reageert</text>
+
+  <!-- =========== ROW 4: Niet opgelost + Opgelost =========== -->
+  <rect x="160" y="308" width="110" height="28" rx="4" fill="#555" stroke="#333" stroke-width="1.5"/>
+  <text x="215" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Niet opgelost</text>
+
+  <rect x="300" y="308" width="100" height="28" rx="4" fill="#555" stroke="#333" stroke-width="1.5"/>
+  <text x="350" y="326" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Opgelost</text>
+  <!-- mail icon left of Opgelost -->
+  <text x="290" y="327" font-size="12" fill="#e74c3c" text-anchor="end">⚡✉</text>
+
+  <!-- Opgelost -> Afgemeld -->
+  <line x1="350" y1="336" x2="350" y2="394" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- =========== ROW 5: Afgemeld =========== -->
+  <rect x="285" y="396" width="130" height="32" rx="4" fill="#555" stroke="#222" stroke-width="2"/>
+  <text x="350" y="417" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Afgemeld</text>
+
+  <!-- mail icons right of Afgemeld -->
+  <text x="425" y="410" font-size="12" fill="#e74c3c">⚡✉</text>
+  <text x="452" y="410" font-size="9" fill="#777">afsluitmail</text>
+  <text x="425" y="425" font-size="12" fill="#e74c3c">⚡✉</text>
+  <text x="452" y="425" font-size="9" fill="#777">feedbackverzoek</text>
+
+  <!-- EINDE -->
+  <line x1="330" y1="442" x2="370" y2="442" stroke="#E3027F" stroke-width="3" stroke-linecap="round"/>
+  <text x="350" y="456" text-anchor="middle" font-size="9" fill="#E3027F" font-weight="700">EINDE</text>
+
+  <text x="330" y="490" text-anchor="middle" font-size="8" fill="#bbb">KI 0682 · bijgewerkt 13-10-2026 · hover over een status voor uitleg</text>
+</svg>
+
+<!-- =========== TOOLTIP ZONES (match rect positions) =========== -->
+<div class="tz" style="left:230px;top:10px;width:214px;height:28px;">
+  <div class="tip" style="left:0;top:34px;"><b>Nieuw / Geregistreerd</b><br>Beginstatus. De melding komt binnen op naam van een behandelaarsgroep.</div>
+</div>
+
+<div class="tz" style="left:285px;top:66px;width:130px;height:30px;">
+  <div class="tip" style="left:-30px;top:36px;"><b>In behandeling</b><br>Je neemt de melding in behandeling. Datumstempel bij <b>Gereageerd</b>.</div>
+</div>
+
+<div class="tz" style="left:40px;top:66px;width:140px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>Wacht op leverancier</b><br>Melding doorzetten naar een leverancier. Vul het veld <b>Leverancier</b> in onder Afhandeling; het e-mailadres wordt automatisch gekoppeld.<br><br><span class="me">✉ E-mail naar leverancier — je ziet het sjabloon en past het aan vóór verzending</span></div>
+</div>
+
+<div class="tz" style="left:135px;top:150px;width:140px;height:28px;">
+  <div class="tip" style="left:0;top:34px;"><b>Afspraak met melder</b><br>Er is een afspraak gemaakt met de aanmelder: belafspraak, test uitvoeren, terugkoppeling geven. Daarna terug naar <b>In behandeling</b>.</div>
+</div>
+
+<div class="tz" style="left:400px;top:150px;width:145px;height:28px;">
+  <div class="tip" style="left:-120px;top:34px;"><b>Wacht op aanmelder</b><br>Je hebt meer informatie nodig van de aanmelder.<br><br><span class="me">✉ Vraagmail — bewerkbaar sjabloon verschijnt, jij past aan en verstuurt</span><br><br><span class="ma">⚡✉ Herinnering na 5 werkdagen (automatisch)</span><br><span class="ma">⚡✉ 2e herinnering na 10 dagen (automatisch)</span><br><br>Na 15 dagen zonder reactie: automatisch naar <b>Opgelost</b>.</div>
+</div>
+
+<div class="tz" style="left:407px;top:228px;width:130px;height:28px;">
+  <div class="tip" style="left:-120px;top:34px;"><b>Reactie ontvangen</b><br>De aanmelder heeft een opmerking geplaatst in de melding. Pak hem weer op: terug naar <b>In behandeling</b>.</div>
+</div>
+
+<div class="tz" style="left:160px;top:308px;width:110px;height:28px;">
+  <div class="tip" style="left:0;top:34px;"><b>Niet opgelost</b><br>Er is geen oplossing beschikbaar voor deze melding.</div>
+</div>
+
+<div class="tz" style="left:300px;top:308px;width:100px;height:28px;">
+  <div class="tip" style="left:-60px;top:34px;"><b>Opgelost</b><br>Melding afgehandeld, wacht op bevestiging van de aanmelder. Datumstempel bij <b>Gereed</b>.<br><br><span class="ma">⚡✉ Afhandelmail naar aanmelder — gaat automatisch</span><br><br>Reageert de aanmelder, dan wordt het <b>Reactie ontvangen</b>.</div>
+</div>
+
+<div class="tz" style="left:285px;top:396px;width:130px;height:32px;">
+  <div class="tip" style="left:-40px;bottom:38px;"><b>Afgemeld</b> — allerlaatste status<br>Definitieve afsluiting. De aanmelder kan <b>niet</b> meer reageren of heropenen.<br><br><span class="ma">⚡✉ Afsluitmail — automatisch</span><br><span class="ma">⚡✉ Feedbackverzoek — automatisch, kort daarna</span></div>
+</div>
+
+</div>
+</body>
+</html>
