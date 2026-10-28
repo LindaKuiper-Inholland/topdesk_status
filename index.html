@@ -13,7 +13,14 @@
     background: #fff;
     padding: 12px;
   }
-  h1 { font-size: 14px; font-weight: 700; color: #E3027F; margin-bottom: 6px; }
+  .diagram-selector { display: flex; gap: 6px; margin-bottom: 6px; }
+  .diagram-selector button {
+    font: 700 14px Arial, sans-serif; color: #777; background: #f5f5f5;
+    border: 1px solid #ddd; border-radius: 4px; padding: 6px 12px; cursor: pointer;
+  }
+  .diagram-selector button[aria-pressed="true"] { color: #E3027F; background: #fff; border-color: #E3027F; }
+  .diagram-selector button:focus-visible { outline: 2px solid #E3027F; outline-offset: 2px; }
+  .concept-note { font-size: 11px; color: #666; margin: 8px 0; max-width: 660px; line-height: 1.5; }
   .legend {
     display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px;
     margin-bottom: 6px; padding: 5px 10px; background: #f5f5f5;
@@ -39,7 +46,11 @@
 </head>
 <body>
 
-<h1>Meldingen</h1>
+<nav class="diagram-selector" aria-label="Kies een statusdiagram">
+  <button type="button" id="meldingen-button" aria-controls="meldingen" aria-pressed="true">Meldingen</button>
+  <button type="button" id="wijzigingen-button" aria-controls="wijzigingen" aria-pressed="false">Wijzigingen</button>
+</nav>
+<section id="meldingen" aria-labelledby="meldingen-button">
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#FFFF00;border:1px solid #ccc;"></div> Start</div>
   <div class="legend-item"><div class="legend-dot" style="background:#E3027F;"></div> Actief</div>
@@ -76,7 +87,7 @@
   <!-- =========== ROW 1: In behandeling + Wacht op leverancier =========== -->
   <rect x="285" y="66" width="130" height="30" rx="4" fill="#E3027F" stroke="#b5026e" stroke-width="1.5"/>
   <text x="350" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">In behandeling</text>
-  <text x="380" y="110" font-size="9" fill="#777">✓ Gereageerd</text>
+  <text x="380" y="110" font-size="9" fill="#777">✓ gereageerd</text>
 
   <!-- bidirectional: In behandeling <-> Wacht op leverancier -->
   <line x1="283" y1="81" x2="182" y2="81" stroke="#888" stroke-width="1.5" marker-start="url(#ab)" marker-end="url(#a)"/>
@@ -132,7 +143,7 @@
 
   <rect x="300" y="308" width="100" height="28" rx="4" fill="#555" stroke="#333" stroke-width="1.5"/>
   <text x="350" y="326" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Opgelost</text>
-  <text x="362" y="368" font-size="9" fill="#777">✓ Gereed</text>
+  <text x="362" y="368" font-size="9" fill="#777">✓ gereed</text>
   <!-- mail icon left of Opgelost -->
   <text x="385" y="354" font-size="12" fill="#e74c3c" text-anchor="end">⚡✉</text>
 
@@ -142,7 +153,8 @@
   <!-- =========== ROW 5: Afgemeld =========== -->
   <rect x="285" y="396" width="130" height="32" rx="4" fill="#555" stroke="#222" stroke-width="2"/>
   <text x="350" y="417" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Afgemeld</text>
-  <text x="430" y="440" font-size="9" fill="#777">✓ Afgemeld</text>
+  <text x="430" y="440" font-size="9" fill="#777">✓ afgemeld</text>
+  <text x="430" y="455" font-size="9" fill="#777">archivering na 14 dagen</text>
 
   <!-- mail icons right of Afgemeld -->
   <text x="425" y="410" font-size="12" fill="#e74c3c">⚡✉</text>
@@ -195,5 +207,128 @@
 </div>
 
 </div>
+</section>
+
+<section id="wijzigingen" aria-labelledby="wijzigingen-button" hidden>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#FFFF00;border:1px solid #ccc;"></div> Start</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E3027F;"></div> Actief / gepland</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#222;"></div> Wachtend</div>
+  <div class="legend-item"><div class="legend-dot" style="border:2px solid #E3027F;background:#fff;"></div> Reactie</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#555;"></div> Resultaat / einde</div>
+  <div class="legend-item"><span style="color:#777;">✓</span> datumstempel (aangenomen koppeling)</div>
+</div>
+<p class="concept-note"><b>Concept: eenvoudige wijzigingen.</b> De statusnamen komen uit TOPdesk; de volgorde, pijlen en koppeling van de datumstempels zijn een voorstel, geen bevestigde workflow. Mails en automatische overgangen zijn nog niet bekend en daarom niet ingetekend.</p>
+
+<div class="diagram-wrap">
+<svg width="660" height="500" xmlns="http://www.w3.org/2000/svg" font-family="Arial" role="img" aria-labelledby="wijzigingen-title wijzigingen-description">
+  <title id="wijzigingen-title">Statusovergangen van eenvoudige wijzigingen (concept)</title>
+  <desc id="wijzigingen-description">Voorgestelde hoofdroute: Klaar om te starten, Ingepland, In behandeling, Geïmplementeerd, Afgesloten. Zijroutes naar wachten, reactie, annuleren en afwijzen zijn aannames.</desc>
+  <defs>
+    <marker id="change-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#888"/></marker>
+    <marker id="change-arrow-back" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6Z" fill="#888"/></marker>
+  </defs>
+
+  <line x1="350" y1="40" x2="350" y2="72" stroke="#888" stroke-width="1.5" marker-end="url(#change-arrow)"/>
+  <line x1="350" y1="104" x2="350" y2="136" stroke="#888" stroke-width="1.5" marker-end="url(#change-arrow)"/>
+  <line x1="283" y1="153" x2="192" y2="153" stroke="#888" stroke-width="1.5" marker-start="url(#change-arrow-back)" marker-end="url(#change-arrow)"/>
+  <path d="M370,168 L370,195 L517,195 L517,208" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#change-arrow)"/>
+  <line x1="517" y1="240" x2="517" y2="276" stroke="#888" stroke-width="1.5" marker-end="url(#change-arrow)"/>
+  <path d="M595,293 L620,293 L620,153 L417,153" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#change-arrow)"/>
+  <line x1="350" y1="168" x2="350" y2="340" stroke="#888" stroke-width="1.5" marker-end="url(#change-arrow)"/>
+  <line x1="350" y1="372" x2="350" y2="412" stroke="#888" stroke-width="1.5" marker-end="url(#change-arrow)"/>
+  <line x1="283" y1="89" x2="178" y2="89" stroke="#888" stroke-width="1.5" marker-end="url(#change-arrow)"/>
+  <line x1="263" y1="25" x2="178" y2="25" stroke="#888" stroke-width="1.5" marker-end="url(#change-arrow)"/>
+
+  <g transform="translate(265 10)">
+    <rect width="170" height="30" rx="4" fill="#FFFF00" stroke="#ccc000" stroke-width="1.5"/>
+    <text x="85" y="19" text-anchor="middle" font-size="12" font-weight="700">Klaar om te starten</text>
+  </g>
+  <g transform="translate(285 74)">
+    <rect width="130" height="30" rx="4" fill="#E3027F" stroke="#b5026e" stroke-width="1.5"/>
+    <text x="65" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Ingepland</text>
+  </g>
+  <g transform="translate(285 138)">
+    <rect width="130" height="30" rx="4" fill="#E3027F" stroke="#b5026e" stroke-width="1.5"/>
+    <text x="65" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">In behandeling</text>
+    <text x="95" y="44" font-size="9" fill="#777">✓ gestart</text>
+  </g>
+  <g transform="translate(40 138)">
+    <rect width="150" height="30" rx="4" fill="#222" stroke="#111" stroke-width="1.5"/>
+    <text x="75" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Wacht op leverancier</text>
+  </g>
+  <g transform="translate(440 210)">
+    <rect width="155" height="30" rx="4" fill="#222" stroke="#111" stroke-width="1.5"/>
+    <text x="77.5" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Wacht op aanvrager</text>
+  </g>
+  <g transform="translate(440 278)">
+    <rect width="155" height="30" rx="4" fill="#fff" stroke="#E3027F" stroke-width="2"/>
+    <text x="77.5" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#E3027F">Reactie ontvangen</text>
+  </g>
+  <g transform="translate(275 342)">
+    <rect width="150" height="30" rx="4" fill="#555" stroke="#333" stroke-width="1.5"/>
+    <text x="75" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Geïmplementeerd</text>
+  </g>
+  <g transform="translate(285 414)">
+    <rect width="130" height="32" rx="4" fill="#555" stroke="#222" stroke-width="2"/>
+    <text x="65" y="21" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Afgesloten</text>
+    <text x="95" y="47" font-size="9" fill="#777">✓ gesloten</text>
+  </g>
+  <g transform="translate(40 74)">
+    <rect width="136" height="30" rx="4" fill="#555" stroke="#333" stroke-width="1.5"/>
+    <text x="68" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Geannuleerd</text>
+  </g>
+  <g transform="translate(40 10)">
+    <rect width="136" height="30" rx="4" fill="#555" stroke="#333" stroke-width="1.5"/>
+    <text x="68" y="19" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Afgewezen</text>
+  </g>
+  <text x="50" y="490" text-anchor="middle" font-size="8" fill="#bbb">concept 28-10-2026</text>
+</svg>
+
+<div class="tz" style="left:265px;top:10px;width:170px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>Klaar om te starten</b><br>Voorstel: beginstatus van de eenvoudige wijziging, voordat deze wordt ingepland. Afwijzen is hier als mogelijke zijroute getekend.</div>
+</div>
+<div class="tz" style="left:285px;top:74px;width:130px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>Ingepland</b><br>Voorstel: de uitvoering is ingepland. De wijziging gaat daarna in behandeling, of wordt geannuleerd.</div>
+</div>
+<div class="tz" style="left:285px;top:138px;width:130px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>In behandeling</b><br>Voorstel: de uitvoering is gestart. Aangenomen wordt dat de datumstempel <b>Gestart</b> wordt aangevinkt en de datum wordt ingevuld. Deze koppeling moet nog worden gecontroleerd.</div>
+</div>
+<div class="tz" style="left:40px;top:138px;width:150px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>Wacht op leverancier</b><br>Voorstel: de uitvoering wacht op een leverancier en gaat daarna terug naar <b>In behandeling</b>. Eventuele mails zijn nog niet bekend.</div>
+</div>
+<div class="tz" style="left:440px;top:210px;width:155px;height:30px;">
+  <div class="tip" style="left:-100px;top:36px;"><b>Wacht op aanvrager</b><br>Voorstel: er is informatie van de aanvrager nodig. Bij een antwoord volgt <b>Reactie ontvangen</b>. Of dit automatisch gebeurt en of er mails worden verstuurd, is nog niet bekend.</div>
+</div>
+<div class="tz" style="left:440px;top:278px;width:155px;height:30px;">
+  <div class="tip" style="left:-100px;top:36px;"><b>Reactie ontvangen</b><br>Voorstel: de aanvrager heeft gereageerd. De wijziging gaat terug naar <b>In behandeling</b>; het mechanisme is nog niet bevestigd.</div>
+</div>
+<div class="tz" style="left:275px;top:342px;width:150px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>Geïmplementeerd</b><br>Voorstel: de wijziging is uitgevoerd en kan na controle worden afgesloten.</div>
+</div>
+<div class="tz" style="left:285px;top:414px;width:130px;height:32px;">
+  <div class="tip" style="left:0;bottom:38px;"><b>Afgesloten</b><br>Voorstel: de wijziging is afgerond. Aangenomen wordt dat de datumstempel <b>Gesloten</b> wordt aangevinkt en de datum wordt ingevuld. Deze koppeling moet nog worden gecontroleerd.</div>
+</div>
+<div class="tz" style="left:40px;top:74px;width:136px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>Geannuleerd</b><br>Voorstel: een ingeplande wijziging wordt niet uitgevoerd. Mogelijk kan annuleren ook vanuit andere statussen; dat is nog niet bevestigd.</div>
+</div>
+<div class="tz" style="left:40px;top:10px;width:136px;height:30px;">
+  <div class="tip" style="left:0;top:36px;"><b>Afgewezen</b><br>Voorstel: de wijziging wordt niet goedgekeurd voor uitvoering. De herkomst van deze overgang moet nog worden gecontroleerd.</div>
+</div>
+</div>
+</section>
+
+<script>
+  const diagramButtons = document.querySelectorAll('.diagram-selector button');
+  diagramButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      diagramButtons.forEach(option => {
+        const selected = option === button;
+        option.setAttribute('aria-pressed', String(selected));
+        document.getElementById(option.getAttribute('aria-controls')).hidden = !selected;
+      });
+    });
+  });
+</script>
 </body>
 </html>
